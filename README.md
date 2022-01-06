@@ -1,24 +1,8 @@
-# launchbadge-mail
+# Vue 3 Environment MVP
 
-## Project setup
-```
-pnpm install
-```
-
-### Compiles and hot-reloads for development
-```
-pnpm run serve
-```
-
-### Compiles and minifies for production
-```
-pnpm run build
-```
-
-### Lints and fixes files
-```
-pnpm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## technologies used
+* [Vue 3](https://v3.vuejs.org/api/sfc-script-setup.html) (Single File Components)
+    * +[TypeScript](https://www.typescriptlang.org/)
+* [Vite](https://vitejs.dev/guide/) (bundler)
+* [Pinia](https://pinia.vuejs.org/introduction.html) (state management)
+* [TailwindCSS](https://tailwindcss.com/docs/installation) (styling)
