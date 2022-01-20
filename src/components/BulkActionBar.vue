@@ -4,7 +4,7 @@
       <input
         type="checkbox"
         :checked="store.allEmailsSelected"
-        class="mr-4 h-6 w-6"
+        class="mr-4 h-6 w-6 cursor-pointer"
         :class="[store.someEmailsSelected ? 'partial-check' : '']"
         @click="store.bulkSelect"
       />

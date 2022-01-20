@@ -40,7 +40,7 @@
         <td class="px-4">
           <input
             type="checkbox"
-            class="h-4 w-4 mt-2"
+            class="h-4 w-4 mt-2 cursor-pointer"
             :checked="store.emailSet.has(email)"
             @click="store.toggle(email)"
           />
