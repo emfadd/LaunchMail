@@ -13,14 +13,13 @@ interface Email {
   favorite: boolean;
 }
 
-
 export default defineStore({
   id: "email",
   state: () => ({
     emails: [],
     selectedScreen: ref("inbox"),
     openedEmail: ref(null),
-    emailSet: reactive(new Set())
+    emailSet: reactive(new Set()),
   }),
   actions: {
     async callEmails() {
@@ -43,11 +42,7 @@ export default defineStore({
       this.updateEmail(email);
     },
     handleFavoriteClick(email: Email) {
-      if (email.favorite === false) {
-        email.favorite = true;
-      } else if (email.favorite === true) {
-        email.favorite = false;
-      }
+      email.favorite = !email.favorite
       this.updateEmail(email);
     },
     selectScreen(newScreen: string) {
@@ -108,30 +103,30 @@ export default defineStore({
       }
     },
     clear() {
-      this.emailSet.clear()
+      this.emailSet.clear();
     },
     addMultiple(newEmails: []) {
       newEmails.forEach((email) => {
-        this.emailSet.add(email)
-      })
+        this.emailSet.add(email);
+      });
     },
     forSelected(fn) {
       this.emailSet.forEach((email: Email) => {
         fn(email);
         axios.put(`http://localhost:3000/emails/${email.id}`, email);
-      })
+      });
     },
     markRead() {
-      this.forSelected(e => e.read = true)
+      this.forSelected((e) => (e.read = true));
     },
     markUnread() {
-      this.forSelected(e => e.read = false)
+      this.forSelected((e) => (e.read = false));
     },
     archive() {
-      this.forSelected(e => e.archived = true);
-      this.clear()
-    }
+      this.forSelected((e) => (e.archived = true));
+      this.clear();
     },
+  },
   getters: {
     sortFavorites(): Email[] {
       return this.emails.sort((e1, e2) => {
@@ -145,17 +140,16 @@ export default defineStore({
       );
     },
     numberSelected() {
-      return this.emailSet.size
+      return this.emailSet.size;
     },
     numberEmails() {
-      return this.emails.length
+      return this.emails.length;
     },
     allEmailsSelected() {
-      return this.numberSelected === this.numberEmails
+      return this.numberSelected === this.numberEmails;
     },
     someEmailsSelected() {
       return this.numberSelected > 0 && this.numberSelected < this.numberEmails;
-    }
-  }
-
+    },
+  },
 });

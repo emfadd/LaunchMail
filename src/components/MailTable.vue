@@ -1,23 +1,45 @@
 <template>
   <div class="container mt-20">
-  <button
-    class="px-4 py-2 mx-2 mt-20 mb-6"
-    @click="store.selectScreen('inbox')"
-    :disabled="store.selectedScreen === 'inbox'"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 hover:stroke-cyan-500 disabled:stroke-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" />
-    </svg>
-  </button>
-  <button
-    class="px-4 py-2 mx-2 mt-20 mb-6"
-    @click="store.selectScreen('archive')"
-    :disabled="store.selectedScreen === 'archive'"
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 hover:stroke-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-    </svg>
-  </button>
+    <button
+      class="px-4 py-2 mx-2 mt-20 mb-6"
+      :disabled="store.selectedScreen === 'inbox'"
+      @click="store.selectScreen('inbox')"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-12 w-12 hover:stroke-cyan-500 disabled:stroke-black"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20"
+        />
+      </svg>
+    </button>
+    <button
+      class="px-4 py-2 mx-2 mt-20 mb-6"
+      :disabled="store.selectedScreen === 'archive'"
+      @click="store.selectScreen('archive')"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-12 w-12 hover:stroke-cyan-500"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
+        />
+      </svg>
+    </button>
   </div>
   <BulkActionBar :emails="store.filteredEmails" />
   <table class="table-fixed mx-auto border-collapse border border-slate-500">
@@ -47,9 +69,9 @@
         </td>
         <td>
           <button
-            @click="store.handleFavoriteClick(email)"
             class="mr-2"
             :hidden="store.selectedScreen === 'archive'"
+            @click="store.handleFavoriteClick(email)"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -69,7 +91,10 @@
           </button>
         </td>
         <td @click="store.handleOpenEmail(email)">{{ email.from }}</td>
-        <td :class="[email.read ? 'opacity-75' : '']" @click="store.handleOpenEmail(email)">
+        <td
+          :class="[email.read ? 'opacity-75' : '']"
+          @click="store.handleOpenEmail(email)"
+        >
           <p class="mx-6 w-[600px] truncate">
             <strong>{{ email.subject }}</strong>
           </p>
@@ -78,7 +103,10 @@
           {{ format(new Date(email.sentAt), "MMM do yyyy") }}
         </td>
         <td>
-          <button class="mx-4 px-2 border bg-gray-300 text-black drop-shadow-lg border-black hover:bg-blue-400" @click="store.handleArchiveClick(email)">
+          <button
+            class="mx-4 px-2 border bg-gray-300 text-black drop-shadow-lg border-black hover:bg-blue-400"
+            @click="store.handleArchiveClick(email)"
+          >
             Archive
           </button>
         </td>

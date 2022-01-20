@@ -13,22 +13,22 @@
       <!--   TODO: fix styling so hovered button has no color change   -->
       <button
         class="mx-2 mt-4 border px-2 bg-gray-300 text-black drop-shadow-lg border-black hover:bg-blue-400 disabled:opacity-50"
-        @click="store.markRead()"
         :disabled="[...store.emailSet].every((e) => e.read)"
+        @click="store.markRead()"
       >
         Mark Read
       </button>
       <button
         class="mx-2 mt-4 border px-2 bg-gray-300 text-black drop-shadow-lg border-black hover:bg-blue-400 disabled:opacity-50"
-        @click="store.markUnread()"
         :disabled="[...store.emailSet].every((e) => !e.read)"
+        @click="store.markUnread()"
       >
         Mark Unread
       </button>
       <button
         class="mx-2 my-2 border px-2 bg-gray-300 text-black drop-shadow-lg border-black hover:bg-blue-400 disabled:opacity-50"
-        @click="store.archive()"
         :disabled="store.numberSelected === 0"
+        @click="store.archive()"
       >
         Archive
       </button>
@@ -37,15 +37,9 @@
 </template>
 
 <script setup lang="ts">
-import useEmailStore from '../store/handleEmail.ts'
+import useEmailStore from "../store/handleEmail.ts";
 
-const store = useEmailStore()
-const props = defineProps({
-  emails: {
-    type: Array,
-    required: true,
-  },
-});
+const store = useEmailStore();
 </script>
 
 <style scoped></style>
