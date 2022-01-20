@@ -1,50 +1,51 @@
-<script setup lang="ts">
-import useEmailSelection from '../composables/use-email-selection';
-import {computed, defineProps} from 'vue'
-
-const props = defineProps<{emails}>()
-
-let emailSelection = useEmailSelection();
-let numberSelected = computed(() => emailSelection.emails.size)
-let numberEmails = computed(() => props.emails.length)
-let allEmailsSelected = computed(() => numberSelected.value === numberEmails.value)
-let someEmailsSelected = computed(() => {
-  return numberSelected.value > 0 && numberSelected.value < numberEmails.value
-})
-let bulkSelect = function() {
-  if (allEmailsSelected.value) {
-    emailSelection.clear()
-  } else {
-    emailSelection.addMultiple(props.emails)
-  }
-}
-
-</script>
-
 <template>
-  <div class="bulk-action-bar">
-    <span class="checkbox">
-      <input type="checkbox"
-             :checked="allEmailsSelected"
-             :class="[someEmailsSelected ? 'partial-check' : '']"
-             @click="bulkSelect" />
+  <div class="container mb-6">
+    <span class="">
+      <input
+        type="checkbox"
+        :checked="store.allEmailsSelected"
+        class="mr-4 h-6 w-6"
+        :class="[store.someEmailsSelected ? 'partial-check' : '']"
+        @click="store.bulkSelect"
+      />
     </span>
-    <span class="buttons">
-      <button @click="emailSelection.markRead"
-              :disabled="[...emailSelection.emails].every(e => e.read)">
+    <span class="">
+      <!--   TODO: fix styling so hovered button has no color change   -->
+      <button
+        class="mx-2 mt-4 border px-2 bg-gray-300 text-black drop-shadow-lg border-black hover:bg-blue-400 disabled:opacity-50"
+        @click="store.markRead()"
+        :disabled="[...store.emailSet].every((e) => e.read)"
+      >
         Mark Read
       </button>
-      <button @click="emailSelection.markUnread"
-              :disabled="[...emailSelection.emails].every(e => !e.read)">
+      <button
+        class="mx-2 mt-4 border px-2 bg-gray-300 text-black drop-shadow-lg border-black hover:bg-blue-400 disabled:opacity-50"
+        @click="store.markUnread()"
+        :disabled="[...store.emailSet].every((e) => !e.read)"
+      >
         Mark Unread
       </button>
-      <button @click="emailSelection.archive"
-              :disabled="numberSelected === 0">
+      <button
+        class="mx-2 my-2 border px-2 bg-gray-300 text-black drop-shadow-lg border-black hover:bg-blue-400 disabled:opacity-50"
+        @click="store.archive()"
+        :disabled="store.numberSelected === 0"
+      >
         Archive
       </button>
     </span>
   </div>
 </template>
 
-<style scoped>
-</style>
+<script setup lang="ts">
+import useEmailStore from '../store/handleEmail.ts'
+
+const store = useEmailStore()
+const props = defineProps({
+  emails: {
+    type: Array,
+    required: true,
+  },
+});
+</script>
+
+<style scoped></style>

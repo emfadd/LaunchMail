@@ -1,105 +1,107 @@
-<script setup lang="ts">
-  import { format } from 'date-fns';
-  import axios from 'axios';
-  import MailView from '../components/MailView.vue';
-  import ModalView from '../components/ModalView.vue';
-  import BulkActionBar from '../components/BulkActionBar.vue';
-  import {reactive, ref, defineProps, defineComponent, computed} from 'vue';
-  import useEmailSelection from '../composables/use-email-selection'
-
-  let {data: emails}  = await axios.get('http://localhost:3000/emails')
-
-  const emailSelection = useEmailSelection()
-  const openedEmail = ref(null)
-  let selectedScreen = ref('inbox')
-
-
-  const sortedEmails = computed(() => {
-    return emails.sort((e1, e2) => {
-      return e1.sentAt < e2.sentAt ? 1 : -1
-    })
-  })
-  const filteredEmails = computed(() => {
-    if(selectedScreen.value == 'inbox') {
-      return sortedEmails.value.filter(e => !e.archived)
-    } else {
-      return sortedEmails.value.filter(e => e.archived)
-    }
-  })
-
-  let selectScreen = function(newScreen) {
-    selectedScreen = newScreen
-    emailSelection.clear()
-  }
-  let updateEmail = function(email) {
-    axios.put(`http://localhost:3000/emails/${email.id}`, email)
-  }
-  let openEmail = function(email) {
-    this.openedEmail = email
-    if(email) {
-      email.read = true
-      updateEmail(email)
-    }
-  }
-  let archiveEmail = function(email) {
-    email.archived = true
-    updateEmail(email)
-  }
-  let changeEmail = function({toggleRead, toggleArchive, save, closeModal, changeIndex}) {
-    let email = this.openedEmail
-    if(toggleRead) { email.read = !email.read }
-    if(toggleArchive) { email.archived = !email.archived }
-    if(save) { updateEmail(email) }
-    if(closeModal) { this.openedEmail = null }
-    if(changeIndex) {
-      let emails = filteredEmails
-      let currentIndex = this.emails.indexOf(this.openedEmail)
-      let newEmail = emails[currentIndex + changeIndex]
-      openEmail(newEmail)
-    }
-  }
-
-</script>
-
-
 <template>
+  <div class="container mt-20">
   <button
-:disabled="selectedScreen == 'inbox'"
-          @click="selectedScreen = 'inbox'">Inbox</button>
+    class="px-4 py-2 mx-2 mt-20 mb-6"
+    @click="store.selectScreen('inbox')"
+    :disabled="store.selectedScreen === 'inbox'"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 hover:stroke-cyan-500 disabled:stroke-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" />
+    </svg>
+  </button>
   <button
-:disabled="selectedScreen == 'archive'"
-          @click="selectedScreen = 'archive'">Archived</button>
-
-  <BulkActionBar :emails="filteredEmails" />
-
-  <table class="mail-table">
+    class="px-4 py-2 mx-2 mt-20 mb-6"
+    @click="store.selectScreen('archive')"
+    :disabled="store.selectedScreen === 'archive'"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 hover:stroke-cyan-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+    </svg>
+  </button>
+  </div>
+  <BulkActionBar :emails="store.filteredEmails" />
+  <table class="table-fixed mx-auto border-collapse border border-slate-500">
+    <thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th class="text-center w-64">Sender</th>
+        <th class="w-[600px] text-center border border-slate-500">Subject</th>
+        <th class="text-center w-32">Received</th>
+      </tr>
+    </thead>
     <tbody>
-    <tr
-v-for="email in filteredEmails"
+      <tr
+        v-for="email in store.filteredEmails"
         :key="email.id"
-        :class="['clickable', email.read ? 'read' : '']">
-      <td>
-        <input
-type="checkbox"
-               :checked="emailSelection.emails.has(email)"
-               @click="emailSelection.toggle(email)" />
-      </td>
-      <td @click="openEmail(email)">{{email.from}}</td>
-      <td @click="openEmail(email)">
-        <p><strong>{{email.subject}}</strong> - {{email.body}}</p>
-      </td>
-      <td class="date" @click="openEmail(email)">
-        {{format(new Date(email.sentAt), 'MMM do yyyy')}}
-      </td>
-      <td><button @click="archiveEmail(email)">Archive</button></td>
-    </tr>
+        class="h-12 border border-slate-500 text-left cursor-pointer hover:shadow-lg"
+        :class="[email.read ? 'bg-slate-200' : '']"
+      >
+        <td class="px-4">
+          <input
+            type="checkbox"
+            class="h-4 w-4 mt-2"
+            :checked="store.emailSet.has(email)"
+            @click="store.toggle(email)"
+          />
+        </td>
+        <td>
+          <button
+            @click="store.handleFavoriteClick(email)"
+            class="mr-2"
+            :hidden="store.selectedScreen === 'archive'"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 mt-2 mr-2 hover:fill-blue-400"
+              :class="[email.favorite ? 'fill-blue-500' : '']"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+              />
+            </svg>
+          </button>
+        </td>
+        <td @click="store.handleOpenEmail(email)">{{ email.from }}</td>
+        <td :class="[email.read ? 'opacity-75' : '']" @click="store.handleOpenEmail(email)">
+          <p class="mx-6 w-[600px] truncate">
+            <strong>{{ email.subject }}</strong>
+          </p>
+        </td>
+        <td class="date pl-2" @click="store.handleOpenEmail(email)">
+          {{ format(new Date(email.sentAt), "MMM do yyyy") }}
+        </td>
+        <td>
+          <button class="mx-4 px-2 border bg-gray-300 text-black drop-shadow-lg border-black hover:bg-blue-400" @click="store.handleArchiveClick(email)">
+            Archive
+          </button>
+        </td>
+      </tr>
     </tbody>
   </table>
-
-  <ModalView v-if="openedEmail" @closeModal="openedEmail = null">
-    <MailView :email="openedEmail" @changeEmail="changeEmail" />
+  <ModalView v-if="store.openedEmail" @closeModal="store.openedEmail = null">
+    <MailView :email="store.openedEmail" @changeEmail="store.changeEmail" />
   </ModalView>
 </template>
 
-<style scoped>
-</style>
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import { format } from "date-fns";
+import axios from "axios";
+import MailView from "./MailView.vue";
+import ModalView from "./ModalView.vue";
+import BulkActionBar from "./BulkActionBar.vue";
+import useEmailStore from "../store/handleEmail.ts";
+
+const store = useEmailStore();
+
+store.callEmails();
+</script>
+
+<style scoped></style>

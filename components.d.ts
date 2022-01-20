@@ -8,7 +8,6 @@ declare module 'vue' {
     MailTable: typeof import('./src/components/MailTable.vue')['default']
     MailView: typeof import('./src/components/MailView.vue')['default']
     ModalView: typeof import('./src/components/ModalView.vue')['default']
-    Test: typeof import('./src/components/test.vue')['default']
   }
 }
 
